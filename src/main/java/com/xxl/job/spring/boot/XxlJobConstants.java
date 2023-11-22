@@ -21,7 +21,6 @@ public class XxlJobConstants {
      */
     public static final String DEFAULT_GLUE_TYPE = "BEAN";
 
-
     /**
      * 任务调度平台API-登录
      */

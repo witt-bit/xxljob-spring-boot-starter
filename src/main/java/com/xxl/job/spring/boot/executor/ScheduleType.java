@@ -1,10 +1,15 @@
 package com.xxl.job.spring.boot.executor;
 
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 /**
  * @author xuxueli 2020-10-29 21:11:23
  */
-public enum ScheduleTypeEnum {
+@Getter
+@AllArgsConstructor
+public enum ScheduleType {
 
     NONE("无"),
 
@@ -23,18 +28,10 @@ public enum ScheduleTypeEnum {
      */
     /*FIX_DELAY(I18nUtil.getString("schedule_type_fix_delay"))*/;
 
-    private String title;
+    private final String title;
 
-    ScheduleTypeEnum(String title) {
-        this.title = title;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public static ScheduleTypeEnum match(String name, ScheduleTypeEnum defaultItem){
-        for (ScheduleTypeEnum item: ScheduleTypeEnum.values()) {
+    public static ScheduleType match(String name, ScheduleType defaultItem){
+        for (ScheduleType item: ScheduleType.values()) {
             if (item.name().equals(name)) {
                 return item;
             }

@@ -15,8 +15,6 @@
  */
 package com.xxl.job.spring.boot.metrics;
 
-import com.xxl.job.core.biz.model.HandleCallbackParam;
-import com.xxl.job.core.executor.impl.XxlJobSpringExecutor;
 import com.xxl.job.core.thread.TriggerCallbackThread;
 import io.micrometer.core.instrument.*;
 import io.micrometer.core.instrument.binder.MeterBinder;
@@ -53,15 +51,13 @@ public class XxlJobMetrics implements MeterBinder, ApplicationListener<Applicati
 	public static final String METRIC_NAME_JOB_REQUESTS_DURATION 			= XXL_JOB_METRIC_NAME_PREFIX + ".job.duration";
 	public static final String METRIC_NAME_JOB_QUEUE_SIZE 			= XXL_JOB_METRIC_NAME_PREFIX + ".job.queue.size";
 
-	private XxlJobSpringExecutor executor;
-	private Iterable<Tag> tags;
+	private final Iterable<Tag> tags;
 
-	public XxlJobMetrics(XxlJobSpringExecutor executor) {
-		this(executor, Collections.emptyList());
+	public XxlJobMetrics() {
+		this(Collections.emptyList());
 	}
 
-	public XxlJobMetrics(XxlJobSpringExecutor executor, Iterable<Tag> tags) {
-		this.executor = executor;
+	public XxlJobMetrics(Iterable<Tag> tags) {
 		this.tags = tags;
 	}
 

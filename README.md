@@ -170,17 +170,12 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-import com.xxl.job.core.context.XxlJobContext;
 import com.xxl.job.core.context.XxlJobHelper;
+import com.xxl.job.spring.boot.annotation.ScheduleJob;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import com.xxl.job.core.biz.model.ReturnT;
-import com.xxl.job.core.handler.IJobHandler;
-import com.xxl.job.core.handler.annotation.XxlJob;
-import com.xxl.job.spring.boot.annotation.XxlJobCron;
 
 
 /**
@@ -204,8 +199,7 @@ public class SampleXxlJob {
     /**
      * 1、简单任务示例（Bean模式）
      */
-    @XxlJob("demoJobHandler")
-    @XxlJobCron(cron = "* * 0 * * ?", desc = "简单任务示例（Bean模式）", author = "hiwepy")
+    @ScheduleJob(schedule = "* * 0 * * ?", name = "简单任务示例（Bean模式）", author = "hiwepy")
     public void demoJobHandler() throws Exception {
         XxlJobHelper.log("XXL-JOB, Hello World.");
 
@@ -220,8 +214,7 @@ public class SampleXxlJob {
     /**
      * 2、分片广播任务
      */
-    @XxlJob("shardingJobHandler")
-    @XxlJobCron(cron = "* * 0 * * ?", desc = "分片广播任务", author = "hiwepy")
+    @ScheduleJob(schedule = "* * 0 * * ?", name = "分片广播任务", author = "hiwepy")
     public void shardingJobHandler() throws Exception {
 
         // 分片参数
@@ -245,8 +238,7 @@ public class SampleXxlJob {
     /**
      * 3、命令行任务
      */
-    @XxlJob("commandJobHandler")
-    @XxlJobCron(cron = "* * 0 * * ?", desc = "命令行任务", author = "hiwepy")
+    @ScheduleJob(schedule = "* * 0 * * ?", name = "命令行任务", author = "hiwepy")
     public void commandJobHandler() throws Exception {
         String command = XxlJobHelper.getJobParam();
         int exitValue = -1;
@@ -284,7 +276,7 @@ public class SampleXxlJob {
         if (exitValue == 0) {
             // default success
         } else {
-            XxlJobHelper.handleFail("command exit value("+exitValue+") is failed");
+            XxlJobHelper.handleFail("command exit value(" + exitValue + ") is failed");
         }
 
     }
@@ -297,14 +289,13 @@ public class SampleXxlJob {
      *      "method: get\n" +
      *      "data: content\n";
      */
-    @XxlJob("httpJobHandler")
-    @XxlJobCron(cron = "* * 0 * * ?", desc = "跨平台Http任务", author = "hiwepy")
+    @ScheduleJob(schedule = "* * 0 * * ?", name = "跨平台Http任务", author = "hiwepy")
     public void httpJobHandler() throws Exception {
 
         // param parse
         String param = XxlJobHelper.getJobParam();
-        if (param==null || param.trim().length()==0) {
-            XxlJobHelper.log("param["+ param +"] invalid.");
+        if (param == null || param.trim().length() == 0) {
+            XxlJobHelper.log("param[" + param + "] invalid.");
 
             XxlJobHelper.handleFail();
             return;
@@ -314,7 +305,7 @@ public class SampleXxlJob {
         String url = null;
         String method = null;
         String data = null;
-        for (String httpParam: httpParams) {
+        for (String httpParam : httpParams) {
             if (httpParam.startsWith("url:")) {
                 url = httpParam.substring(httpParam.indexOf("url:") + 4).trim();
             }
@@ -327,14 +318,14 @@ public class SampleXxlJob {
         }
 
         // param valid
-        if (url==null || url.trim().length()==0) {
-            XxlJobHelper.log("url["+ url +"] invalid.");
+        if (url == null || url.trim().length() == 0) {
+            XxlJobHelper.log("url[" + url + "] invalid.");
 
             XxlJobHelper.handleFail();
             return;
         }
-        if (method==null || !Arrays.asList("GET", "POST").contains(method)) {
-            XxlJobHelper.log("method["+ method +"] invalid.");
+        if (method == null || !Arrays.asList("GET", "POST").contains(method)) {
+            XxlJobHelper.log("method[" + method + "] invalid.");
 
             XxlJobHelper.handleFail();
             return;
@@ -364,7 +355,7 @@ public class SampleXxlJob {
             connection.connect();
 
             // data
-            if (isPostMethod && data!=null && data.trim().length()>0) {
+            if (isPostMethod && data != null && data.trim().length() > 0) {
                 DataOutputStream dataOutputStream = new DataOutputStream(connection.getOutputStream());
                 dataOutputStream.write(data.getBytes("UTF-8"));
                 dataOutputStream.flush();
@@ -412,15 +403,16 @@ public class SampleXxlJob {
     /**
      * 5、生命周期任务示例：任务初始化与销毁时，支持自定义相关逻辑；
      */
-    @XxlJob(value = "demoJobHandler2", init = "init", destroy = "destroy")
-    @XxlJobCron(cron = "* * 0 * * ?", desc = "生命周期任务示例：任务初始化与销毁时，支持自定义相关逻辑", author = "hiwepy")
+    @ScheduleJob(schedule = "* * 0 * * ?", name = "生命周期任务示例：任务初始化与销毁时，支持自定义相关逻辑", author = "hiwepy")
     public void demoJobHandler2() throws Exception {
         XxlJobHelper.log("XXL-JOB, Hello World.");
     }
-    public void init(){
+
+    public void init() {
         logger.info("init");
     }
-    public void destroy(){
+
+    public void destroy() {
         logger.info("destroy");
     }
 

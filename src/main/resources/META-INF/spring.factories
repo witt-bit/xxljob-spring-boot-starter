@@ -1,4 +1,3 @@
 # Auto Configure
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.xxl.job.spring.boot.XxlJobAutoConfiguration,\
-com.xxl.job.spring.boot.XxlJobMetricsAutoConfiguration
+com.xxl.job.spring.boot.XxlJobAutoConfiguration

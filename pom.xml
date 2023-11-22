@@ -2,6 +2,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.github.hiwepy</groupId>
+	<artifactId>xxljob-spring-boot-starter</artifactId>
+	<description>Spring Boot Starter For XXL-Job</description>
+	<version>2.0.0</version>
+	<name>${project.groupId}:${project.artifactId}</name>
+	<url>https://github.com/hiwepy/${project.artifactId}</url>
+	<packaging>jar</packaging>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -10,32 +17,10 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
-	<groupId>com.github.hiwepy</groupId>
-	<artifactId>xxljob-spring-boot-starter</artifactId>
-	<description>Spring Boot Starter For XXL-Job</description>
-	<version>2.0.1-SNAPSHOT</version>
-	<name>${project.groupId}:${project.artifactId}</name>
-	<url>https://github.com/hiwepy/${project.artifactId}</url>
-	<packaging>jar</packaging>
-
-	<licenses>
-		<license>
-			<name>The Apache Software License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-		</license>
-	</licenses>
-
-	<scm>
-		<connection>scm:git:https:github.com/hiwepy/${project.artifactId}.git</connection>
-		<developerConnection>scm:git:https:github.com/hiwepy/${project.artifactId}.git</developerConnection>
-		<url>https:github.com/hiwepy/${project.artifactId}</url>
-		<tag>${project.artifactId}</tag>
-	</scm>
-
 	<developers>
 		<developer>
-			<name>wandl</name>
-			<email>hnxyhcwdl1003@163.com</email>
+			<name>wangfuguo</name>
+			<email>wangfuguo@swifthealth.cn</email>
 			<roles>
 				<role>developer</role>
 			</roles>
@@ -44,16 +29,18 @@
 	</developers>
 
 	<distributionManagement>
-		<snapshotRepository>
-			<id>ossrh</id>
-			<name>Maven Snapshots Repository</name>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
 		<repository>
-			<id>ossrh</id>
-			<name>Maven Central Staging Repository</name>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+			<!--和maven/settings.xml中server中的id一致，表示使用该id对应的用户名和密码-->
+			<id>nexus</id>
+			<!--如果jar的版本是release版本，那么就上传到这个仓库，根据自己情况修改-->
+			<url>http://192.168.1.136:28081/repository/maven-releases/</url>
 		</repository>
+		<snapshotRepository>
+			<!--和maven/settings.xml中server中的id一致，表示使用该id对应的用户名和密码-->
+			<id>nexus</id>
+			<!--如果jar的版本是snapshot版本，那么就上传到这个仓库，根据自己情况修改-->
+			<url>http://192.168.1.136:28081/repository/maven-snapshots/</url>
+		</snapshotRepository>
 	</distributionManagement>
 
 	<build>
@@ -99,21 +86,6 @@
 									</requireJavaVersion>
 								</rules>
 							</configuration>
-						</execution>
-					</executions>
-				</plugin>
-				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-gpg-plugin -->
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-gpg-plugin</artifactId>
-					<version>${maven-gpg-plugin.version}</version>
-					<executions>
-						<execution>
-							<id>sign-artifacts</id>
-							<phase>verify</phase>
-							<goals>
-								<goal>sign</goal>
-							</goals>
 						</execution>
 					</executions>
 				</plugin>
@@ -197,41 +169,41 @@
 						</archive>
 					</configuration>
 				</plugin>
-				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-javadoc-plugin -->
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>${maven-javadoc-plugin.version}</version>
-					<configuration>
-						<charset>${project.build.sourceEncoding}</charset>
-						<encoding>${project.build.sourceEncoding}</encoding>
-						<docencoding>${project.build.sourceEncoding}</docencoding>
-					</configuration>
-					<executions>
-						<execution>
-							<id>attach-javadocs</id>
-							<phase>package</phase>
-							<goals>
-								<goal>jar</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
-				<plugin>
-					<groupId>org.sonatype.plugins</groupId>
-					<artifactId>nexus-staging-maven-plugin</artifactId>
-					<version>${maven-nexus-staging-plugin.version}</version>
-					<extensions>true</extensions>
-					<configuration>
-						<serverId>ossrh</serverId>
-						<nexusUrl>https://oss.sonatype.org/</nexusUrl>
-						<autoReleaseAfterClose>true</autoReleaseAfterClose>
-						<!-- <sslAllowAll>true</sslAllowAll> -->
-						<stagingProgressPauseDurationSeconds>60</stagingProgressPauseDurationSeconds>
-						<stagingProgressTimeoutMinutes>20</stagingProgressTimeoutMinutes>
-						<detectBuildFailures>true</detectBuildFailures>
-					</configuration>
-				</plugin>
+<!--				&lt;!&ndash; https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-javadoc-plugin &ndash;&gt;-->
+<!--				<plugin>-->
+<!--					<groupId>org.apache.maven.plugins</groupId>-->
+<!--					<artifactId>maven-javadoc-plugin</artifactId>-->
+<!--					<version>${maven-javadoc-plugin.version}</version>-->
+<!--					<configuration>-->
+<!--						<charset>${project.build.sourceEncoding}</charset>-->
+<!--						<encoding>${project.build.sourceEncoding}</encoding>-->
+<!--						<docencoding>${project.build.sourceEncoding}</docencoding>-->
+<!--					</configuration>-->
+<!--					<executions>-->
+<!--						<execution>-->
+<!--							<id>attach-javadocs</id>-->
+<!--							<phase>package</phase>-->
+<!--							<goals>-->
+<!--								<goal>jar</goal>-->
+<!--							</goals>-->
+<!--						</execution>-->
+<!--					</executions>-->
+<!--				</plugin>-->
+<!--				<plugin>-->
+<!--					<groupId>org.sonatype.plugins</groupId>-->
+<!--					<artifactId>nexus-staging-maven-plugin</artifactId>-->
+<!--					<version>${maven-nexus-staging-plugin.version}</version>-->
+<!--					<extensions>true</extensions>-->
+<!--					<configuration>-->
+<!--						<serverId>ossrh</serverId>-->
+<!--						<nexusUrl>https://oss.sonatype.org/</nexusUrl>-->
+<!--						<autoReleaseAfterClose>true</autoReleaseAfterClose>-->
+<!--						&lt;!&ndash; <sslAllowAll>true</sslAllowAll> &ndash;&gt;-->
+<!--						<stagingProgressPauseDurationSeconds>60</stagingProgressPauseDurationSeconds>-->
+<!--						<stagingProgressTimeoutMinutes>20</stagingProgressTimeoutMinutes>-->
+<!--						<detectBuildFailures>true</detectBuildFailures>-->
+<!--					</configuration>-->
+<!--				</plugin>-->
 			</plugins>
 		</pluginManagement>
 		<plugins>
@@ -323,19 +295,14 @@
 						<artifactId>maven-source-plugin</artifactId>
 					</plugin>
 					<!-- javadoc -->
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-javadoc-plugin</artifactId>
-					</plugin>
+<!--					<plugin>-->
+<!--						<groupId>org.apache.maven.plugins</groupId>-->
+<!--						<artifactId>maven-javadoc-plugin</artifactId>-->
+<!--					</plugin>-->
 					<!-- 安装插件：将项目输出构件安装到本地仓库 -->
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-install-plugin</artifactId>
-					</plugin>
-					<!-- 签名插件：对构建的jar、javadoc、source使用gpg来签名 -->
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-gpg-plugin</artifactId>
 					</plugin>
 					<!-- 发布插件 ：将项目输出构件部署到远程仓库 -->
 					<plugin>
@@ -347,38 +314,36 @@
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-release-plugin</artifactId>
 					</plugin>
-					<plugin>
-						<groupId>org.sonatype.plugins</groupId>
-						<artifactId>nexus-staging-maven-plugin</artifactId>
-					</plugin>
+<!--					<plugin>-->
+<!--						<groupId>org.sonatype.plugins</groupId>-->
+<!--						<artifactId>nexus-staging-maven-plugin</artifactId>-->
+<!--					</plugin>-->
 				</plugins>
 			</build>
 		</profile>
 	</profiles>
 
-	<repositories>
-		<repository>
-			<id>smartbear-sweden-plugin-repository</id>
-			<url>http://smartbearsoftware.com/repository/maven2/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
+<!--	<repositories>-->
+<!--		<repository>-->
+<!--			<id>nexus</id>-->
+<!--			<url>http://nexus.company.swifthealth.cn:9090/repository/maven-public/</url>-->
+<!--			<releases>-->
+<!--				<enabled>true</enabled>-->
+<!--			</releases>-->
+<!--			<snapshots>-->
+<!--				<enabled>true</enabled>-->
+<!--			</snapshots>-->
+<!--		</repository>-->
+<!--	</repositories>-->
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<caffeine.version>2.9.3</caffeine.version>
 		<micrometer.version>1.10.4</micrometer.version>
-		<fastjson.version>2.0.10</fastjson.version>
 		<okhttp3.version>3.14.9</okhttp3.version>
 		<xxl-job.version>2.4.0</xxl-job.version>
 		<maven.version>3.0</maven.version>
-		<maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
 		<maven-jar-plugin.version>3.1.1</maven-jar-plugin.version>
 		<maven-release-plugin.version>2.5.3</maven-release-plugin.version>
 		<maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
@@ -388,13 +353,6 @@
 
 	<dependencyManagement>
 		<dependencies>
-
-			<!-- https://mvnrepository.com/artifact/com.alibaba/fastjson -->
-			<dependency>
-			    <groupId>com.alibaba</groupId>
-			    <artifactId>fastjson</artifactId>
-			    <version>${fastjson.version}</version>
-			</dependency>
 			<!-- https://mvnrepository.com/artifact/com.xuxueli/xxl-job-core -->
 			<dependency>
 			    <groupId>com.xuxueli</groupId>
@@ -417,7 +375,7 @@
 		<dependency>
 		    <groupId>org.projectlombok</groupId>
 		    <artifactId>lombok</artifactId>
-		    <scope>compile</scope>
+		    <scope>provided</scope>
 		</dependency>
 
 		<dependency>
@@ -428,6 +386,7 @@
 		<dependency>
 			<groupId>jakarta.servlet</groupId>
 			<artifactId>jakarta.servlet-api</artifactId>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- Core starter, including auto-configuration support, logging and YAML -->
@@ -441,60 +400,50 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+
 		<!-- Spring Boot Test 依赖 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+			<optional>true</optional>
 		</dependency>
+
 		<!-- @ConfigurationProperties annotation processing (metadata for IDEs) -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-configuration-processor</artifactId>
 			<optional>true</optional>
 		</dependency>
+
 		<!-- Compile dependencies -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-autoconfigure</artifactId>
+			<optional>true</optional>
 		</dependency>
 
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
-		</dependency>
-		<dependency>
-		    <groupId>com.alibaba</groupId>
-		    <artifactId>fastjson</artifactId>
-		</dependency>
 		<dependency>
 		    <groupId>com.xuxueli</groupId>
 		    <artifactId>xxl-job-core</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>com.squareup.okhttp3</groupId>
 			<artifactId>okhttp</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>com.github.ben-manes.caffeine</groupId>
 			<artifactId>caffeine</artifactId>
 		</dependency>
-		<!-- For AOP -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-aop</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-starter-logging</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
+
 		<!-- For Spring Boot Actuator -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 			<scope>provided</scope>
+			<optional>true</optional>
 			<exclusions>
 				<exclusion>
 					<groupId>org.springframework.boot</groupId>
@@ -506,10 +455,12 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+
 		<dependency>
 			<groupId>io.micrometer</groupId>
 			<artifactId>micrometer-core</artifactId>
 			<scope>provided</scope>
+			<optional>true</optional>
 		</dependency>
 
 	</dependencies>

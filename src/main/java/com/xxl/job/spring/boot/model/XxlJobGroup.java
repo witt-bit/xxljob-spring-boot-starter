@@ -15,7 +15,7 @@
  */
 package com.xxl.job.spring.boot.model;
 
-import com.alibaba.fastjson2.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -32,7 +32,7 @@ public class XxlJobGroup implements Serializable {
 
 	private int id;
 
-	@JSONField(name = "appname")
+	@JsonProperty("appname")
 	private String appName;
 
 	private String title;

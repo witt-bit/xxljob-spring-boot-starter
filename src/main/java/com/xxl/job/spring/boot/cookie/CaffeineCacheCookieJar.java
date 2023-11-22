@@ -17,14 +17,10 @@ package com.xxl.job.spring.boot.cookie;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.github.benmanes.caffeine.cache.RemovalCause;
-import com.github.benmanes.caffeine.cache.RemovalListener;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Cookie;
 import okhttp3.CookieJar;
 import okhttp3.HttpUrl;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -33,26 +29,20 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- *  持久化Cookie，运行时缓存了Cookie，当App退出的时候Cookie就不存在了
- * @author 		： <a href="https://github.com/hiwepy">hiwepy</a>
+ * 持久化Cookie，运行时缓存了Cookie，当App退出的时候Cookie就不存在了
+ *
+ * @author ： <a href="https://github.com/hiwepy">hiwepy</a>
  */
 @Slf4j
 public class CaffeineCacheCookieJar implements CookieJar {
 
-    protected Cache<String, List<Cookie>> cookieCache;
+    protected final Cache<String, List<Cookie>> cookieCache;
 
     public CaffeineCacheCookieJar(long maximumSize, Duration expireAfterWrite, Duration expireAfterAccess) {
         this.cookieCache = Caffeine.newBuilder()
                 .initialCapacity(10)
                 .maximumSize(maximumSize)
-                .removalListener(new RemovalListener<String, List<Cookie>>() {
-
-                    @Override
-                    public void onRemoval(@Nullable String host, @Nullable List<Cookie> value, @NonNull RemovalCause cause) {
-                        log.debug("Remove Cookie Cache : {}", host);
-                    }
-
-                })
+                .removalListener((host, value, cause) -> log.debug("Remove Cookie Cache : {}", host))
                 .expireAfterWrite(expireAfterWrite)
                 .expireAfterAccess(expireAfterAccess)
                 .build();
@@ -88,5 +78,5 @@ public class CaffeineCacheCookieJar implements CookieJar {
         }
         return Collections.emptyList();
     }
-    
+
 }
