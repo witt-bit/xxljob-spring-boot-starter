@@ -9,6 +9,7 @@ import org.springframework.core.MethodIntrospector;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Map;
 
 /**
@@ -40,13 +41,33 @@ public class ScheduleJobBeanPostProcessor implements BeanPostProcessor {
 
         // 异步创建组
         for (final Map.Entry<Method, ScheduleJob> annotatedMethod : annotatedMethods.entrySet()) {
-
-            final ScheduleJobContext context
-                    = new ScheduleJobContext(bean, annotatedMethod.getKey(), annotatedMethod.getValue());
-
+            final Method method = annotatedMethod.getKey();
+            final ScheduleJob annotation = annotatedMethod.getValue();
+            this.checkAnnotationMethod(method);
+            final ScheduleJobContext context = new ScheduleJobContext(bean, method, annotation);
             this.xxlJobSpringExecutor.registerJobHandler(context);
         }
 
         return bean;
+    }
+
+    /**
+     * 对注解的方法进行检查
+     *
+     * @param method 方法
+     */
+    private void checkAnnotationMethod(Method method) {
+        final int modifiers = method.getModifiers();
+        if (Modifier.isPrivate(modifiers)) {
+            throw new IllegalStateException("@ScheduleJob method '" + method + "' cannot use 'private' modifier !");
+        }
+
+        if (Modifier.isStatic(modifiers)) {
+            throw new IllegalStateException("@ScheduleJob method '" + method + "' cannot use 'static' modifier !");
+        }
+
+        if (Modifier.isFinal(modifiers)) {
+            throw new IllegalStateException("@ScheduleJob method '" + method + "' cannot use 'final' modifier !");
+        }
     }
 }

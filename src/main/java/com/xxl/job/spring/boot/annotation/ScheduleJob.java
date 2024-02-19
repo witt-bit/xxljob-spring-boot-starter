@@ -28,15 +28,16 @@ import java.lang.annotation.*;
  *
  * @author witt
  * @see com.xxl.job.core.handler.annotation.XxlJob
+ * @see com.xxl.job.spring.boot.ScheduleJobBeanPostProcessor
+ * @see com.xxl.job.spring.boot.AutoEnrolledXxlJobExecutor
  */
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface ScheduleJob {
 
-
     /**
-     * jobHandler名称,如未填写，取方法名的名称，请规范命名{@code xxJobHandler}
+     * jobHandler名称,如未填写，取当前方法名的名称，请规范命名{@code xxJobHandler}，注意同服务内不可重复命名
      *
      * @return {@link String}
      */
