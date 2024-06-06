@@ -105,28 +105,38 @@ public class AutoEnrolledXxlJobExecutor extends XxlJobSpringExecutor {
 
     @Override
     public void afterSingletonsInstantiated() {
-        if (null == this.xxlJobGroupId || null == this.jobGroupCreatedFuture || this.jobFutures.isEmpty()) {
-            log.warn("xxlJob annotation JobHandler not found , exit xxlJob initialize .");
+        if (null == this.jobGroupCreatedFuture || this.jobFutures.isEmpty()) {
+            log.warn("XxlJob annotated JobHandler not found , exit xxlJob initialize .");
             this.clearUp();
             return;
         }
-
         // 注册时间
         final Duration waitAutoEnrollTime = this.properties.getWaitAutoEnrollTime();
 
         try {
             this.jobGroupCreatedFuture.get(waitAutoEnrollTime.toNanos(), TimeUnit.NANOSECONDS);
+            if (null == this.xxlJobGroupId) {
+                log.error("XxlJob annotated JobHandler found {} , But initialize jobGroup fail !," +
+                        "please check 'xxl-job' properties .", this.jobFutures.size());
+                this.clearUp();
+                return;
+            }
             CompletableFuture.allOf(this.jobFutures.toArray(new CompletableFuture[0]))
                     .get(waitAutoEnrollTime.toNanos(), TimeUnit.NANOSECONDS);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } catch (ExecutionException e) {
-            throw new IllegalStateException("create xxlJob Group or xxl Job fail !", e);
+            final Throwable causeEx = e.getCause();
+            if (causeEx instanceof RuntimeException) {
+                throw (RuntimeException) causeEx;
+            }
+            throw new IllegalStateException("create xxlJob Group or xxl Job fail !", causeEx);
         } catch (TimeoutException e) {
             throw new IllegalStateException("After waiting for the xxlJob auto-registration for 2m," +
                     " please check whether the xxlJob service is available !", e);
+        } finally {
+            this.clearUp();
         }
-
 
         // refresh GlueFactory
         GlueFactory.refreshInstance(1);
@@ -138,15 +148,14 @@ public class AutoEnrolledXxlJobExecutor extends XxlJobSpringExecutor {
             throw new RuntimeException(e);
         }
 
-        log.info("xxlJob start success.");
-        this.clearUp();
+        log.info("XxlJob start success.");
     }
 
     /**
      * 清理
      */
     private void clearUp() {
-        log.debug("xxlJob clean objects .");
+        log.debug("XxlJob clean objects .");
         // 关闭xxlJob Task初始化
         this.autoEnrolledJobExecutor.shutdown();
 

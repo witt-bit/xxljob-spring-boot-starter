@@ -61,20 +61,9 @@ public class XxlJobTemplate {
         // xxl-job admin 请求体
         String url = this.joinPath(XxlJobConstants.LOGIN_GET);
         Request request = this.buildRequestEntity(url, paramMap, true);
-        // xxl-job admin 请求操作
-        try (Response response = okhttp3Client.newCall(request).execute()) {
-            // xxl-job admin 请求结果成功
-            if (response.isSuccessful()) {
-                // 从返回结果中获取cookie
-//                String cookie = response.header(HttpHeaders.SET_COOKIE);
-                // 返回cookie
-                return;
-            }
-            throw new IllegalStateException("xxl-job login fail, respCode: "
-                    + response.code() + ",respMsg:" + response.message());
-        } catch (IOException e) {
-            throw new IllegalStateException("build xxlJob login Request fail !", e);
-        }
+        this.doRequest(request, response -> this.parseResponseEntity(response, false,
+                new TypeReference<ReturnT<Map<String, Object>>>() {
+                }));
     }
 
     /**
@@ -88,15 +77,14 @@ public class XxlJobTemplate {
         Request request = this.buildRequestEntity(url, paramMap);
         // xxl-job admin 请求操作
         try (Response response = okhttp3Client.newCall(request).execute()) {
-            ;
             // xxl-job admin 请求结果成功
             if (response.isSuccessful()) {
                 return;
             }
-            throw new IllegalStateException("xxl-job logout fail, respCode: "
+            throw new IllegalStateException("Xxl-job logout fail, respCode: "
                     + response.code() + ",respMsg:" + response.message());
         } catch (IOException e) {
-            throw new IllegalStateException("build xxlJob logout Request fail !", e);
+            throw new IllegalStateException("Build xxlJob logout Request fail !", e);
         }
     }
 
@@ -416,17 +404,16 @@ public class XxlJobTemplate {
         return request.build();
     }
 
-    private void loginIfNeed(HttpUrl httpUrl, Headers.Builder headers, Request.Builder request) {
-
+    private synchronized void loginIfNeed(HttpUrl httpUrl, Headers.Builder headers, Request.Builder request) {
         // xxl-job admin cookie
         CookieJar cookieJar = okhttp3Client.cookieJar();
         List<Cookie> cookies = cookieJar.loadForRequest(httpUrl);
         // 缓存中的 cookie 不为空，查找我们需要的 cookie
         if (CollectionUtils.isEmpty(cookies) || cookies.stream().noneMatch(cookie -> XxlJobConstants.XXL_RPC_COOKIE.equals(cookie.name()))) {
+            log.info("Login Xxl-job ...");
             // 缓存中的 cookie 为空，或者缓存中的 cookie 不包含我们需要的 cookie
             this.login(properties.getUsername(), properties.getPassword(), properties.isRemember());
         }
-
     }
 
     private <T> T doRequest(Request request, Function<Response, T> respParser) {
@@ -437,13 +424,14 @@ public class XxlJobTemplate {
             // 请求结果处理
             return respParser.apply(response);
         } catch (IOException e) {
-            throw new IllegalStateException("build xxl-job request fail !");
+            throw new IllegalStateException("Build xxl-job request fail !");
         }
     }
 
     @SuppressWarnings("unchecked")
     private <T, R> R parseResponseEntity(Response response, boolean requiredBody, TypeReference<T> typeRef) {
         try {
+            String url = response.request().url().toString();
             // xxl-job admin 请求结果成功
             if (response.isSuccessful()) {
                 final ResponseBody responseBody = response.body();
@@ -455,19 +443,18 @@ public class XxlJobTemplate {
                         result = this.getResult((ReturnT<? extends T>) result);
                     }
                 }
-
                 if (requiredBody && null == result) {
-                    throw new IllegalStateException("xxl-job server fail, body is Required, respCode: "
+                    throw new IllegalStateException("Xxl-job server '" + url + "' fail, body is Required, respCode: "
                             + response.code() + ",respMsg:" + response.message());
                 }
                 return (R) result;
             }
         } catch (IOException e) {
-            throw new IllegalStateException("parse xxl-Job response fail , respCode: "
+            throw new IllegalStateException("Parse xxl-Job response fail , respCode: "
                     + response.code() + ",respMsg:" + response.message(), e);
         }
 
-        throw new IllegalStateException("xxl-job server fail, respCode: "
+        throw new IllegalStateException("Xxl-job server fail, respCode: "
                 + response.code() + ",respMsg:" + response.message());
     }
 
@@ -483,15 +470,14 @@ public class XxlJobTemplate {
     }
 
     private <R> R getResult(ReturnT<R> result) {
-        if (result.getCode() == ReturnT.SUCCESS_CODE) {
+        final int code = result.getCode();
+        if (code == ReturnT.SUCCESS_CODE) {
             return result.getContent();
         }
 
-        if (result.getCode() == ReturnT.SUCCESS_CODE) {
-            return result.getContent();
-        }
-
-        throw new IllegalStateException("xxl-job state fail :  " + result);
+        // language=JSON
+        String respString = "{ \"code\": " + code + ", \"msg\": " + result.getMsg() + " }";
+        throw new IllegalStateException("Xxl-job server reject : '" + respString + "' !");
     }
 
 }
